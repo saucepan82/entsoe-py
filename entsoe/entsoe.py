@@ -483,19 +483,28 @@ class EntsoeRawClient:
         response = self._base_request(params=params, start=start, end=end)
         return response.text
 
-    def query_crossborder_flows(self, from_domain, to_domain, start, end, country_code_from=None, country_code_to=None, **kwargs):
-        params = {
+    def query_crossborder_flows(
+    self,
+    from_domain: str,
+    to_domain: str,
+    country_code_from: str,
+    country_code_to: str,
+    start: pd.Timestamp,
+    end: pd.Timestamp,
+) -> str:
+        """Query hourly cross-border physical flows."""
+    params = {
         'documentType': 'A11',
         'in_Domain': from_domain,
         'out_Domain': to_domain,
         'periodStart': start.strftime('%Y%m%d%H%M'),
         'periodEnd': end.strftime('%Y%m%d%H%M'),
     }
+
         if country_code_from:
-            params['contract_MarketAgreement.Type'] = 'A01'
-            params['country_Code_From'] = country_code_from
+            params['countryCodeFrom'] = country_code_from
         if country_code_to:
-            params['country_Code_To'] = country_code_to
+            params['countryCodeTo'] = country_code_to
 
         return self._base_request(params=params)
 
