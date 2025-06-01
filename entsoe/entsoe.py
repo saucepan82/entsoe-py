@@ -507,8 +507,7 @@ class EntsoeRawClient:
         params['countryCodeFrom'] = country_code_from
     if country_code_to:
         params['countryCodeTo'] = country_code_to
-
-    return self._base_request(params=params)
+        return self._base_request(params=params)
 
 
     def query_scheduled_exchanges(
