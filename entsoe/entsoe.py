@@ -1522,35 +1522,22 @@ class EntsoePandasClient(EntsoeRawClient):
 
 
     @year_limited
-    def query_crossborder_flows(
-            self, country_code_from: Union[Area, str],
-            country_code_to: Union[Area, str], start: pd.Timestamp,
-            end: pd.Timestamp, **kwargs) -> pd.Series:
-        """
-        Note: Result will be in the timezone of the origin country
+    def query_crossborder_flows(self, start: pd.Timestamp, end: pd.Timestamp, from_domain=None, to_domain=None, country_code_from=None, country_code_to=None, **kwargs):
+        if country_code_from:
+           from_domain = self.domain_map[country_code_from]
+        if country_code_to:
+          to_domain = self.domain_map[country_code_to]
 
-        Parameters
-        ----------
-        country_code_from : Area|str
-        country_code_to : Area|str
-        start : pd.Timestamp
-        end : pd.Timestamp
+        if not from_domain or not to_domain:
+            raise ValueError("Both from_domain and to_domain must be provided, either directly or via country_code.")
 
-        Returns
-        -------
-        pd.Series
-        """
-        area_to = lookup_area(country_code_to)
-        area_from = lookup_area(country_code_from)
-        text = super(EntsoePandasClient, self).query_crossborder_flows(
-            country_code_from=area_from,
-            country_code_to=area_to,
-            start=start,
-            end=end)
-        ts = parse_crossborder_flows(text)
-        ts = ts.tz_convert(area_from.tz)
-        ts = ts.truncate(before=start, after=end)
-        return ts
+    params = {
+        'documentType': 'A11',
+        'in_Domain': to_domain,
+        'out_Domain': from_domain
+    }
+
+        return self._base_request(start=start, end=end, params=params, **kwargs)
 
     @year_limited
     def query_scheduled_exchanges(
