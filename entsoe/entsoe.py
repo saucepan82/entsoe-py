@@ -483,32 +483,16 @@ class EntsoeRawClient:
         response = self._base_request(params=params, start=start, end=end)
         return response.text
 
-    def query_crossborder_flows(
-    self,
-    from_domain: str,
-    to_domain: str,
-    country_code_from: str = None,
-    country_code_to: str = None,
-    start: pd.Timestamp = None,
-    end: pd.Timestamp = None,
-) -> str:
-        """ 
-    Query hourly cross-border physical flows with optional country codes. 
-    """
-    params = {
-        'documentType': 'A11',
-        'in_Domain': from_domain,
-        'out_Domain': to_domain,
-        'periodStart': start.strftime('%Y%m%d%H%M'),
-        'periodEnd': end.strftime('%Y%m%d%H%M'),
-    }
+    def query_crossborder_flows(self, from_domain, to_domain, start, end, **kwargs):
+        params = {
+            'documentType': 'A11',
+            'in_Domain': from_domain,
+            'out_Domain': to_domain
+        }
 
-    if country_code_from:
-        params['countryCodeFrom'] = country_code_from
-    if country_code_to:
-        params['countryCodeTo'] = country_code_to
+        params = self._add_time_interval(params, start, end)
         return self._base_request(params=params)
-
+    
 
     def query_scheduled_exchanges(
             self, country_code_from: Union[Area, str],
