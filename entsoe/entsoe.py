@@ -487,12 +487,14 @@ class EntsoeRawClient:
     self,
     from_domain: str,
     to_domain: str,
-    country_code_from: str,
-    country_code_to: str,
-    start: pd.Timestamp,
-    end: pd.Timestamp,
+    country_code_from: str = None,
+    country_code_to: str = None,
+    start: pd.Timestamp = None,
+    end: pd.Timestamp = None,
 ) -> str:
-        """Query hourly cross-border physical flows."""
+        """ 
+    Query hourly cross-border physical flows with optional country codes. 
+    """
     params = {
         'documentType': 'A11',
         'in_Domain': from_domain,
@@ -501,12 +503,13 @@ class EntsoeRawClient:
         'periodEnd': end.strftime('%Y%m%d%H%M'),
     }
 
-        if country_code_from:
-            params['countryCodeFrom'] = country_code_from
-        if country_code_to:
-            params['countryCodeTo'] = country_code_to
+    if country_code_from:
+        params['countryCodeFrom'] = country_code_from
+    if country_code_to:
+        params['countryCodeTo'] = country_code_to
 
-        return self._base_request(params=params)
+    return self._base_request(params=params)
+
 
     def query_scheduled_exchanges(
             self, country_code_from: Union[Area, str],
