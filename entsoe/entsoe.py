@@ -483,27 +483,21 @@ class EntsoeRawClient:
         response = self._base_request(params=params, start=start, end=end)
         return response.text
 
-    def query_crossborder_flows(self, from_domain, to_domain, start, end, country_code_from=None, country_code_to=None):
-        """Query physical flows between two areas"""
-
+    def query_crossborder_flows(self, from_domain, to_domain, start, end, country_code_from=None, country_code_to=None, **kwargs):
         params = {
-          'documentType': 'A11',
-          'in_Domain': to_domain,
-         'out_Domain': from_domain,
-         }
-
+        'documentType': 'A11',
+        'in_Domain': from_domain,
+        'out_Domain': to_domain,
+        'periodStart': start.strftime('%Y%m%d%H%M'),
+        'periodEnd': end.strftime('%Y%m%d%H%M'),
+    }
         if country_code_from:
-            params['contract_MarketParticipant.mRID'] = country_code_from
-
+            params['contract_MarketAgreement.Type'] = 'A01'
+            params['country_Code_From'] = country_code_from
         if country_code_to:
-            params['contract_MarketParticipant.marketRole.type'] = country_code_to
+            params['country_Code_To'] = country_code_to
 
-        return self._base_query(
-            start=start,
-            end=end,
-            params=params,
-            parser=self._parse_crossborder_flows,
-        )
+        return self._base_request(params=params)
 
     def query_scheduled_exchanges(
             self, country_code_from: Union[Area, str],
