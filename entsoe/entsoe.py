@@ -1516,9 +1516,12 @@ def query_crossborder_flows(
     **kwargs,
 ):
     if country_code_from:
-        from_domain = self.domain_map[country_code_from]
+        from_domain = self.domain_map.get(country_code_from)
     if country_code_to:
-        to_domain = self.domain_map[country_code_to]
+        to_domain = self.domain_map.get(country_code_to)
+
+    if not from_domain or not to_domain:
+        raise ValueError("Either domain codes or country codes must be specified correctly.")
 
     text = super(EntsoePandasClient, self).query_crossborder_flows(
         from_domain=from_domain,
@@ -1529,6 +1532,7 @@ def query_crossborder_flows(
     )
 
     return self._parse_load(text)
+
 
     @year_limited
     def query_scheduled_exchanges(
