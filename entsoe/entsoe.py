@@ -1521,12 +1521,12 @@ class EntsoePandasClient(EntsoeRawClient):
         return df
 
 
-   @year_limited
-def query_crossborder_flows(self, start: pd.Timestamp, end: pd.Timestamp, from_domain=None, to_domain=None, country_code_from=None, country_code_to=None, **kwargs):
-    if country_code_from:
-        from_domain = self.domain_map[country_code_from]
-    if country_code_to:
-        to_domain = self.domain_map[country_code_to]
+    @year_limited
+    def query_crossborder_flows(self, start: pd.Timestamp, end: pd.Timestamp, from_domain=None, to_domain=None, country_code_from=None, country_code_to=None, **kwargs):
+        if country_code_from:
+            from_domain = self.domain_map[country_code_from]
+        if country_code_to:
+            to_domain = self.domain_map[country_code_to]
 
     text = super(EntsoePandasClient, self).query_crossborder_flows(
         from_domain=from_domain,
