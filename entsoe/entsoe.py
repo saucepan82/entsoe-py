@@ -1513,7 +1513,7 @@ def query_crossborder_flows(
     to_domain=None,
     country_code_from=None,
     country_code_to=None,
-    **kwargs,
+    **kwargs
 ):
     if country_code_from:
         from_domain = self.domain_map.get(country_code_from)
@@ -1521,17 +1521,15 @@ def query_crossborder_flows(
         to_domain = self.domain_map.get(country_code_to)
 
     if not from_domain or not to_domain:
-        raise ValueError("Either domain codes or country codes must be specified correctly.")
+        raise ValueError("Missing domain or country code information.")
 
-    text = super(EntsoePandasClient, self).query_crossborder_flows(
-        from_domain=from_domain,
-        to_domain=to_domain,
-        start=start,
-        end=end,
-        **kwargs
-    )
+    params = {
+        "documentType": "A11",
+        "in_Domain": to_domain,
+        "out_Domain": from_domain
+    }
 
-    return self._parse_load(text)
+    return self._base_request(params=params, start=start, end=end, **kwargs)
 
 
     @year_limited
