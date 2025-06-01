@@ -1521,23 +1521,22 @@ class EntsoePandasClient(EntsoeRawClient):
         return df
 
 
-    @year_limited
-    def query_crossborder_flows(self, start: pd.Timestamp, end: pd.Timestamp, from_domain=None, to_domain=None, country_code_from=None, country_code_to=None, **kwargs):
-        if country_code_from:
-           from_domain = self.domain_map[country_code_from]
-        if country_code_to:
-          to_domain = self.domain_map[country_code_to]
+   @year_limited
+def query_crossborder_flows(self, start: pd.Timestamp, end: pd.Timestamp, from_domain=None, to_domain=None, country_code_from=None, country_code_to=None, **kwargs):
+    if country_code_from:
+        from_domain = self.domain_map[country_code_from]
+    if country_code_to:
+        to_domain = self.domain_map[country_code_to]
 
-        if not from_domain or not to_domain:
-            raise ValueError("Both from_domain and to_domain must be provided, either directly or via country_code.")
+    text = super(EntsoePandasClient, self).query_crossborder_flows(
+        from_domain=from_domain,
+        to_domain=to_domain,
+        start=start,
+        end=end,
+        **kwargs
+    )
 
-    params = {
-        'documentType': 'A11',
-        'in_Domain': to_domain,
-        'out_Domain': from_domain
-    }
-
-        return self._base_request(start=start, end=end, params=params, **kwargs)
+    return self._parse_load(text)
 
     @year_limited
     def query_scheduled_exchanges(
